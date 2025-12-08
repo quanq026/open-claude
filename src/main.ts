@@ -123,9 +123,9 @@ function createSettingsWindow() {
 
   settingsWindow = new BrowserWindow({
     width: 480,
-    height: 400,
+    height: 520,
     minWidth: 400,
-    minHeight: 300,
+    minHeight: 400,
     transparent: true,
     vibrancy: 'under-window',
     visualEffectState: 'active',

@@ -14,6 +14,7 @@ const persistHistoryCheckbox = document.getElementById('persist-history') as HTM
 
 let isRecordingKeybind = false;
 let currentSettings: Settings | null = null;
+let pendingKeybind: string | null = null;
 
 // Detect if we're on macOS
 const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -30,14 +31,26 @@ function formatKeybind(keybind: string): string {
     .replace(/\+/g, ' + ');
 }
 
-// Convert key event to Electron accelerator format
-function keyEventToAccelerator(e: KeyboardEvent): string | null {
+// Build accelerator string from current modifier state
+function buildAcceleratorFromModifiers(e: KeyboardEvent): string {
   const parts: string[] = [];
 
-  // Must have at least one modifier
-  if (!e.metaKey && !e.ctrlKey && !e.altKey) {
-    return null;
+  if (e.metaKey || e.ctrlKey) {
+    parts.push('CommandOrControl');
   }
+  if (e.shiftKey) {
+    parts.push('Shift');
+  }
+  if (e.altKey) {
+    parts.push('Alt');
+  }
+
+  return parts.join('+');
+}
+
+// Convert key event to Electron accelerator format
+function keyEventToAccelerator(e: KeyboardEvent): { accelerator: string; isComplete: boolean } {
+  const parts: string[] = [];
 
   if (e.metaKey || e.ctrlKey) {
     parts.push('CommandOrControl');
@@ -52,35 +65,38 @@ function keyEventToAccelerator(e: KeyboardEvent): string | null {
   // Get the key
   let key = e.key;
 
-  // Ignore modifier-only presses
-  if (['Meta', 'Control', 'Shift', 'Alt'].includes(key)) {
-    return null;
+  // Check if this is a modifier-only press
+  const isModifierOnly = ['Meta', 'Control', 'Shift', 'Alt'].includes(key);
+
+  if (!isModifierOnly) {
+    // Normalize key names
+    if (key === ' ') key = 'Space';
+    if (key.length === 1) key = key.toUpperCase();
+
+    // Map special keys
+    const keyMap: Record<string, string> = {
+      'ArrowUp': 'Up',
+      'ArrowDown': 'Down',
+      'ArrowLeft': 'Left',
+      'ArrowRight': 'Right',
+      'Escape': 'Escape',
+      'Enter': 'Return',
+      'Backspace': 'Backspace',
+      'Delete': 'Delete',
+      'Tab': 'Tab',
+    };
+
+    if (keyMap[key]) {
+      key = keyMap[key];
+    }
+
+    parts.push(key);
   }
 
-  // Normalize key names
-  if (key === ' ') key = 'Space';
-  if (key.length === 1) key = key.toUpperCase();
-
-  // Map special keys
-  const keyMap: Record<string, string> = {
-    'ArrowUp': 'Up',
-    'ArrowDown': 'Down',
-    'ArrowLeft': 'Left',
-    'ArrowRight': 'Right',
-    'Escape': 'Escape',
-    'Enter': 'Return',
-    'Backspace': 'Backspace',
-    'Delete': 'Delete',
-    'Tab': 'Tab',
+  return {
+    accelerator: parts.join('+'),
+    isComplete: !isModifierOnly && parts.length >= 2 // Need at least one modifier + one key
   };
-
-  if (keyMap[key]) {
-    key = keyMap[key];
-  }
-
-  parts.push(key);
-
-  return parts.join('+');
 }
 
 // Load settings
@@ -108,10 +124,27 @@ async function savePersistHistory(value: boolean) {
   currentSettings = await claude.saveSettings({ spotlightPersistHistory: value });
 }
 
+// Stop recording and save if we have a valid keybind
+function stopRecording(save: boolean) {
+  if (!isRecordingKeybind) return;
+
+  isRecordingKeybind = false;
+  keybindInput.classList.remove('recording');
+
+  if (save && pendingKeybind) {
+    saveKeybind(pendingKeybind);
+  } else if (currentSettings) {
+    keybindDisplay.textContent = formatKeybind(currentSettings.spotlightKeybind);
+  }
+
+  pendingKeybind = null;
+}
+
 // Keybind recording
 keybindInput.addEventListener('click', () => {
   if (!isRecordingKeybind) {
     isRecordingKeybind = true;
+    pendingKeybind = null;
     keybindInput.classList.add('recording');
     keybindDisplay.textContent = 'Press keys...';
     keybindInput.focus();
@@ -124,35 +157,34 @@ keybindInput.addEventListener('keydown', (e) => {
   e.preventDefault();
   e.stopPropagation();
 
-  const accelerator = keyEventToAccelerator(e);
+  // Handle Escape to cancel
+  if (e.key === 'Escape') {
+    stopRecording(false);
+    return;
+  }
 
-  if (accelerator) {
-    isRecordingKeybind = false;
-    keybindInput.classList.remove('recording');
-    saveKeybind(accelerator);
+  // Handle Enter to confirm
+  if (e.key === 'Enter' && pendingKeybind) {
+    stopRecording(true);
+    return;
+  }
+
+  const result = keyEventToAccelerator(e);
+
+  // Update display to show current keys being pressed
+  if (result.accelerator) {
+    keybindDisplay.textContent = formatKeybind(result.accelerator);
+
+    // If we have a complete combo (modifier + key), store it as pending
+    if (result.isComplete) {
+      pendingKeybind = result.accelerator;
+    }
   }
 });
 
 keybindInput.addEventListener('blur', () => {
-  if (isRecordingKeybind) {
-    isRecordingKeybind = false;
-    keybindInput.classList.remove('recording');
-    // Restore current keybind display
-    if (currentSettings) {
-      keybindDisplay.textContent = formatKeybind(currentSettings.spotlightKeybind);
-    }
-  }
-});
-
-// Escape to cancel recording
-keybindInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && isRecordingKeybind) {
-    isRecordingKeybind = false;
-    keybindInput.classList.remove('recording');
-    if (currentSettings) {
-      keybindDisplay.textContent = formatKeybind(currentSettings.spotlightKeybind);
-    }
-  }
+  // Save pending keybind on blur (clicking away)
+  stopRecording(!!pendingKeybind);
 });
 
 // Persist history toggle
