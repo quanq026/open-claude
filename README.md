@@ -88,6 +88,8 @@ pnpm dev
 pnpm dist
 ```
 
+For detailed build instructions and troubleshooting, see [BUILD_INSTRUCTIONS.md](.github/BUILD_INSTRUCTIONS.md).
+
 ## Authentication
 
 Open Claude uses your existing claude.ai account. Click "Sign in with Claude" to authenticate through the standard web login flow. Your session is stored securely using electron-store.
