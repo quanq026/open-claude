@@ -238,22 +238,28 @@ function removeAttachment(id: string) {
   renderAttachmentList();
 }
 
+const imageIconSvg = `<svg class="attachment-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`;
+const fileIconSvg = `<svg class="attachment-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+
 function renderAttachmentList() {
   const containers = [
     { list: $('attachment-list'), status: $('attachment-status') },
     { list: $('home-attachment-list'), status: $('home-attachment-status') }
   ];
 
-  const pills = pendingAttachments.map(a => `
-    <div class="attachment-pill" data-id="${a.id}">
-      <div class="attachment-icon">${a.file_type?.startsWith('image/') ? '🖼' : '📎'}</div>
-      <div class="attachment-meta">
-        <div class="attachment-name">${escapeHtml(a.file_name)}</div>
-        <div class="attachment-size">${formatFileSize(a.file_size)}</div>
+  const pills = pendingAttachments.map(a => {
+    const icon = a.file_type?.startsWith('image/') ? imageIconSvg : fileIconSvg;
+    return `
+      <div class="attachment-pill" data-id="${a.id}">
+        <div class="attachment-icon">${icon}</div>
+        <div class="attachment-meta">
+          <div class="attachment-name">${escapeHtml(a.file_name)}</div>
+          <div class="attachment-size">${formatFileSize(a.file_size)}</div>
+        </div>
+        <button class="attachment-remove" data-id="${a.id}" title="Remove">✕</button>
       </div>
-      <button class="attachment-remove" data-id="${a.id}" title="Remove">✕</button>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   containers.forEach(({ list, status }) => {
     if (!list) return;
@@ -661,10 +667,7 @@ function addMessage(role: string, content: string, raw = false, storedParentUuid
     const attachmentsEl = document.createElement('div');
     attachmentsEl.className = 'message-attachments';
     attachmentsEl.innerHTML = attachments.map(a => {
-      const isImage = a.file_type?.startsWith('image/');
-      const icon = isImage
-        ? `<svg class="attachment-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>`
-        : `<svg class="attachment-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+      const icon = a.file_type?.startsWith('image/') ? imageIconSvg : fileIconSvg;
       return `
         <div class="message-attachment-row">
           <div class="message-attachment-icon">${icon}</div>
