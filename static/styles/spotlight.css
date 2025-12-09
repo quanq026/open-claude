@@ -163,7 +163,7 @@
     .ai-response h3 { font-size: 1.05em; }
     .ai-response strong { font-weight: 600; }
     .ai-response code {
-      font-family: 'SF Mono', Menlo, monospace;
+      font-family: 'SF Mono', 'Consolas', 'Courier New', Menlo, monospace;
       font-size: 0.9em;
       background: rgba(0, 0, 0, 0.08);
       padding: 2px 6px;
@@ -385,7 +385,7 @@
       line-height: 1.6;
       color: rgba(0, 0, 0, 0.5);
       white-space: pre-wrap;
-      font-family: 'SF Mono', Menlo, monospace;
+      font-family: 'SF Mono', 'Consolas', 'Courier New', Menlo, monospace;
     }
 
     @keyframes spin {
