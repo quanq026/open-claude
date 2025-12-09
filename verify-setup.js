@@ -10,6 +10,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Constants
+const MIN_NODE_VERSION = 18;
 const BUILD_DIR = path.join(__dirname, 'build');
 const NODE_MODULES_DIR = path.join(__dirname, 'node_modules');
 const DIST_DIR = path.join(__dirname, 'dist');
@@ -38,10 +39,14 @@ console.log('📦 Checking Prerequisites...\n');
 const nodeResult = runCommand('node --version', 'Node.js version');
 if (nodeResult.success) {
   try {
-    const versionMatch = nodeResult.output.match(/v?(\d+)/);
-    const version = versionMatch ? parseInt(versionMatch[1], 10) : 0;
-    if (version > 0 && version < 18) {
-      console.log(`⚠️  Warning: Node.js 18+ recommended, you have ${nodeResult.output}`);
+    const versionMatch = nodeResult.output.match(/v?(\d+)\.(\d+)\.(\d+)/);
+    if (versionMatch) {
+      const majorVersion = parseInt(versionMatch[1], 10);
+      if (majorVersion < MIN_NODE_VERSION) {
+        console.log(`⚠️  Warning: Node.js ${MIN_NODE_VERSION}+ recommended, you have ${nodeResult.output}`);
+      }
+    } else {
+      console.log(`⚠️  Warning: Could not parse Node.js version format`);
     }
   } catch (e) {
     console.log(`⚠️  Warning: Could not parse Node.js version`);
