@@ -1,6 +1,6 @@
 # Open Claude
 
-A native macOS desktop client for Claude with a clean, minimal interface and system-wide quick access.
+A native desktop client for Claude with a clean, minimal interface and system-wide quick access. Available for macOS and Windows.
 
 ## Disclaimer
 
@@ -14,14 +14,22 @@ This software is provided "as is" for educational and personal productivity purp
 
 ## Features
 
-### Native macOS Experience
+### Native Desktop Experience
+
+**macOS:**
 - Transparent window with vibrancy effects (under-window blur)
 - Native traffic light controls with custom positioning
 - System font rendering with SF Pro Display
 - Dark mode support
 
+**Windows:**
+- Native window controls with acrylic blur effects
+- System font rendering with Segoe UI  
+- Dark mode support following Windows theme
+- Standard Windows shortcuts (`Ctrl` instead of `Cmd`)
+
 ### Spotlight Search
-Press `Cmd+Shift+C` from anywhere to open a floating Spotlight-style search bar. Ask quick questions without leaving your current workflow.
+Press `Cmd+Shift+C` (macOS) or `Ctrl+Shift+C` (Windows) from anywhere to open a floating Spotlight-style search bar. Ask quick questions without leaving your current workflow.
 
 - Always-on-top floating window
 - Closes automatically when clicking outside
@@ -50,9 +58,18 @@ Press `Cmd+Shift+C` from anywhere to open a floating Spotlight-style search bar.
 ## Installation
 
 ### Pre-built Releases
-Download the latest DMG for your architecture:
-- `Open Claude-x.x.x-arm64.dmg` - Apple Silicon (M1/M2/M3)
+
+**macOS:**
+- `Open Claude-x.x.x-arm64.dmg` - Apple Silicon (M1/M2/M3/M4)
 - `Open Claude-x.x.x.dmg` - Intel
+
+**Windows:**
+- `Open-Claude-Setup-x.x.x.exe` - Windows installer (x64)
+- `Open-Claude-Setup-x.x.x-arm64.exe` - Windows installer (ARM64)
+
+Download the latest release for your platform from the [Releases](https://github.com/tkattkat/open-claude/releases) page.
+
+**Windows Users:** See [WINDOWS.md](WINDOWS.md) for detailed Windows-specific installation and setup instructions.
 
 ### Build from Source
 
@@ -88,12 +105,25 @@ Open Claude uses your existing claude.ai account. Click "Sign in with Claude" to
 
 - [ ] MCP (Model Context Protocol) server support
 - [x] File attachments and image uploads
+- [x] Windows native support
+- [ ] Linux support
 - [ ] Custom keyboard shortcuts configuration
 - [ ] Multiple conversation windows
-- [ ] Export conversations to Markdown
+- [x] Export conversations to Markdown
+
+## Platform Support
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| macOS (Intel) | ✅ Full Support | Native vibrancy effects, SF Pro fonts |
+| macOS (Apple Silicon) | ✅ Full Support | Optimized for M1/M2/M3/M4 chips |
+| Windows 10/11 (x64) | ✅ Full Support | Acrylic blur, Segoe UI fonts |
+| Windows 10/11 (ARM64) | ✅ Full Support | Native ARM64 builds available |
+| Linux | 🚧 Planned | Community contributions welcome |
 
 ## Tech Stack
 
 - Electron 39
 - TypeScript
+- Native platform APIs for optimal performance
 
