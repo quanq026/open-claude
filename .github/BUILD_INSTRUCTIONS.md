@@ -13,7 +13,7 @@ All platforms require:
 
 #### Windows
 - Windows 10/11
-- Windows Build Tools (optional): `npm install -g windows-build-tools`
+- Build Tools (optional): [Visual Studio Build Tools 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) with "Desktop development with C++" workload
 
 #### macOS
 - macOS 10.15 or later
@@ -109,10 +109,9 @@ pnpm install
 ```
 
 #### Build fails on Windows
-1. Install Windows Build Tools:
-   ```bash
-   npm install -g windows-build-tools
-   ```
+1. Install Visual Studio Build Tools:
+   - Download [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+   - Install "Desktop development with C++" workload
 
 2. Run PowerShell/Command Prompt as Administrator
 

@@ -7,10 +7,14 @@ This guide explains how to build and run Open Claude natively on Windows.
 1. **Node.js 18+** - Download from [nodejs.org](https://nodejs.org/)
 2. **pnpm** - Install via npm: `npm install -g pnpm`
 3. **Git** - Download from [git-scm.com](https://git-scm.com/)
-4. **Windows Build Tools** (optional, for native modules):
-   ```bash
-   npm install -g windows-build-tools
-   ```
+4. **Build Tools** (optional, for native modules):
+   - **Option A**: [Visual Studio Build Tools](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022) (Recommended)
+     - Download and install "Build Tools for Visual Studio"
+     - Select "Desktop development with C++" workload
+   - **Option B**: Use npm package (if Option A doesn't work)
+     ```bash
+     npm install -g node-gyp
+     ```
 
 ## Installation
 
@@ -81,9 +85,16 @@ Application data (settings, session, conversations metadata) is stored in:
 
 **Problem**: `node-gyp` errors during installation
 
-**Solution**: Install Windows Build Tools:
+**Solution**: Install Visual Studio Build Tools:
+1. Download [Build Tools for Visual Studio 2022](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022)
+2. Run the installer
+3. Select "Desktop development with C++" workload
+4. Install and restart your terminal
+5. Try `pnpm install` again
+
+Alternatively, ensure you have the latest version of node-gyp:
 ```bash
-npm install -g windows-build-tools
+npm install -g node-gyp@latest
 ```
 
 **Problem**: Electron fails to download

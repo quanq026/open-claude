@@ -9,6 +9,12 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
+// Constants
+const BUILD_DIR = path.join(__dirname, 'build');
+const NODE_MODULES_DIR = path.join(__dirname, 'node_modules');
+const DIST_DIR = path.join(__dirname, 'dist');
+const STATIC_JS_DIR = path.join(__dirname, 'static', 'js');
+
 console.log('🔍 Open Claude - Setup Verification\n');
 
 let hasErrors = false;
@@ -31,9 +37,14 @@ console.log('📦 Checking Prerequisites...\n');
 
 const nodeResult = runCommand('node --version', 'Node.js version');
 if (nodeResult.success) {
-  const version = parseInt(nodeResult.output.replace('v', '').split('.')[0]);
-  if (version < 18) {
-    console.log(`⚠️  Warning: Node.js 18+ recommended, you have ${nodeResult.output}`);
+  try {
+    const versionMatch = nodeResult.output.match(/v?(\d+)/);
+    const version = versionMatch ? parseInt(versionMatch[1], 10) : 0;
+    if (version > 0 && version < 18) {
+      console.log(`⚠️  Warning: Node.js 18+ recommended, you have ${nodeResult.output}`);
+    }
+  } catch (e) {
+    console.log(`⚠️  Warning: Could not parse Node.js version`);
   }
 }
 
@@ -46,13 +57,13 @@ runCommand('git --version', 'Git version');
 // Check if dependencies are installed
 console.log('\n📚 Checking Dependencies...\n');
 
-const nodeModulesExists = fs.existsSync(path.join(__dirname, 'node_modules'));
+const nodeModulesExists = fs.existsSync(NODE_MODULES_DIR);
 if (nodeModulesExists) {
   console.log('✅ node_modules directory exists');
   
   // Check key dependencies
-  const electronExists = fs.existsSync(path.join(__dirname, 'node_modules', 'electron'));
-  const typescriptExists = fs.existsSync(path.join(__dirname, 'node_modules', 'typescript'));
+  const electronExists = fs.existsSync(path.join(NODE_MODULES_DIR, 'electron'));
+  const typescriptExists = fs.existsSync(path.join(NODE_MODULES_DIR, 'typescript'));
   
   if (electronExists) {
     console.log('✅ Electron is installed');
@@ -75,8 +86,8 @@ if (nodeModulesExists) {
 // Check if build artifacts exist
 console.log('\n🔨 Checking Build Status...\n');
 
-const distExists = fs.existsSync(path.join(__dirname, 'dist'));
-const staticJsExists = fs.existsSync(path.join(__dirname, 'static', 'js', 'main.js'));
+const distExists = fs.existsSync(DIST_DIR);
+const staticJsExists = fs.existsSync(path.join(STATIC_JS_DIR, 'main.js'));
 
 if (distExists) {
   console.log('✅ dist/ directory exists');
@@ -98,7 +109,7 @@ console.log(`Platform: ${platform}`);
 
 if (platform === 'win32') {
   console.log('Windows detected');
-  const iconExists = fs.existsSync(path.join(__dirname, 'build', 'icon.ico'));
+  const iconExists = fs.existsSync(path.join(BUILD_DIR, 'icon.ico'));
   if (iconExists) {
     console.log('✅ Windows icon (icon.ico) exists');
   } else {
@@ -107,7 +118,7 @@ if (platform === 'win32') {
   }
 } else if (platform === 'darwin') {
   console.log('macOS detected');
-  const iconExists = fs.existsSync(path.join(__dirname, 'build', 'icon.icns'));
+  const iconExists = fs.existsSync(path.join(BUILD_DIR, 'icon.icns'));
   if (iconExists) {
     console.log('✅ macOS icon (icon.icns) exists');
   } else {
