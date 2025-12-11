@@ -135,7 +135,7 @@ body {
   font-size: 13px;
   font-weight: 500;
   color: #1a1a1a;
-  font-family: 'SF Mono', Menlo, monospace;
+  font-family: 'SF Mono', 'Consolas', 'Courier New', Menlo, monospace;
 }
 
 .keybind-hint {
@@ -224,7 +224,7 @@ body {
 .about-value {
   font-size: 14px;
   color: #1a1a1a;
-  font-family: 'SF Mono', Menlo, monospace;
+  font-family: 'SF Mono', 'Consolas', 'Courier New', Menlo, monospace;
 }
 
 /* Dark mode */

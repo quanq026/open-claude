@@ -10,7 +10,8 @@
     "start": "pnpm run build && electron .",
     "dev": "pnpm run build && electron .",
     "pack": "pnpm run build && electron-builder --dir",
-    "dist": "pnpm run build && electron-builder"
+    "dist": "pnpm run build && electron-builder",
+    "verify": "node verify-setup.js"
   },
   "build": {
     "appId": "com.openclaude.app",
@@ -39,11 +40,11 @@
       "icon": "build/icon.icns"
     },
     "win": {
-      "icon": "build/icon.png",
+      "icon": "build/icon.ico",
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64"]
+          "arch": ["x64", "arm64"]
         }
       ]
     },
